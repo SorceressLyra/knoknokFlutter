@@ -1,0 +1,21 @@
+name: knoknok_mobile
+description: "Reach out to those you love with a simple tap"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  awesome_notifications: ^0.10.0
+  dynamic_system_colors: ^1.8.0
+  socket_io_client: ^3.0.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
