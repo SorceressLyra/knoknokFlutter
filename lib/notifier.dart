@@ -15,7 +15,9 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
-    await _notifier.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
+    
+    // Firebase takes care of this
+    // await _notifier.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()?.requestNotificationsPermission();
   }
 
   /// Handle notification tap
@@ -49,13 +51,8 @@ class NotificationService {
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse response) {
+
   // Send knock reply
-  if(response.actionId == 'knock_ack') {
-    NotificationService.showNotification(
-      id: 1,
-      title: 'Knock Acknowledged',
-      body: 'Who\'s there?',
-    );
-  }
+  
 
 }

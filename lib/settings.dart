@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:knoknok_mobile/connection_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:convert';
 import 'models/settings_model.dart';
 
 class SettingsView extends StatefulWidget {
@@ -16,15 +15,28 @@ class _SettingsViewState extends State<SettingsView> {
   late TextEditingController _usernameController;
   late TextEditingController _serverController;
   late TextEditingController _messageController;
-  late Settings _settings;
 
   @override
   void initState() {
     super.initState();
-    _usernameController = TextEditingController();
-    _serverController = TextEditingController();
-    _messageController = TextEditingController();
-    _loadSettings();
+
+    _isConnected = ConnectionHandler.connectionStatus.value;
+    ConnectionHandler.connectionStatus.addListener(() {
+     try {
+        setState(() {
+          _isConnected = ConnectionHandler.connectionStatus.value;
+        });
+      } catch (e) {
+        print(e);
+      }
+    });
+
+    _usernameController =
+        TextEditingController(text: Settings.instance.username);
+    _serverController =
+        TextEditingController(text: Settings.instance.serverUrl);
+    _messageController =
+        TextEditingController(text: Settings.instance.customMessage);
   }
 
   @override
@@ -35,35 +47,13 @@ class _SettingsViewState extends State<SettingsView> {
     super.dispose();
   }
 
-  Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? settingsJson = prefs.getString('settings');
-
-    if (settingsJson != null) {
-      setState(() {
-        _settings = Settings.fromJson(jsonDecode(settingsJson));
-      });
-    } else {
-      _settings = Settings();
-    }
-
-    _usernameController.text = _settings.username;
-    _serverController.text = _settings.serverUrl;
-    _messageController.text = _settings.customMessage;
-  }
-
   Future<void> _saveSettings() async {
-    _settings.username = _usernameController.text;
-    _settings.serverUrl = _serverController.text;
-    _settings.customMessage = _messageController.text;
+    Settings.instance.username = _usernameController.text;
+    Settings.instance.serverUrl = _serverController.text;
+    Settings.instance.customMessage = _messageController.text;
+    await Settings.save();
 
-    //TODO: update socket connection
-    setState(() {
-      _isConnected = false;
-    });
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('settings', jsonEncode(_settings.toJson()));
+    ConnectionHandler.reconnect();
   }
 
   @override
@@ -77,7 +67,7 @@ class _SettingsViewState extends State<SettingsView> {
             border: OutlineInputBorder(),
             labelText: 'Username',
           ),
-          onChanged: (_) => _saveSettings(),
+          onSubmitted: (_) => _saveSettings(),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -86,7 +76,7 @@ class _SettingsViewState extends State<SettingsView> {
             border: OutlineInputBorder(),
             labelText: 'Server URL',
           ),
-          onChanged: (_) => _saveSettings(),
+          onSubmitted: (_) => _saveSettings(),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -95,7 +85,7 @@ class _SettingsViewState extends State<SettingsView> {
             border: OutlineInputBorder(),
             labelText: 'Custom message',
           ),
-          onChanged: (_) => _saveSettings(),
+          onSubmitted: (_) => _saveSettings(),
         ),
         const SizedBox(height: 16),
         Card(
@@ -105,6 +95,10 @@ class _SettingsViewState extends State<SettingsView> {
               color: _isConnected ? Colors.green : Colors.red,
             ),
             subtitle: Text(_isConnected ? 'Connected' : 'Disconnected'),
+            trailing: IconButton.filled(
+                isSelected: false,
+                onPressed: () => {ConnectionHandler.reconnect()},
+                icon: Icon(Icons.refresh)),
           ),
         ),
         ElevatedButton.icon(
@@ -122,14 +116,14 @@ class _SettingsViewState extends State<SettingsView> {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                       onPressed: () async {
-                        final url = Uri.parse("https://github.com/SorceressLyra");
+                        final url =
+                            Uri.parse("https://github.com/SorceressLyra");
                         if (await canLaunchUrl(url)) {
                           await launchUrl(url);
                         }
                       },
                       icon: const Icon(Icons.link),
-                      label: const Text('Github')
-                  )
+                      label: const Text('Github'))
                 ]),
           },
           icon: Icon(Icons.info),

@@ -1,8 +1,8 @@
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:knoknok_mobile/connection_handler.dart';
 import 'package:knoknok_mobile/home.dart';
-import 'package:knoknok_mobile/notifier.dart';
+import 'package:knoknok_mobile/models/settings_model.dart';
 import 'package:knoknok_mobile/settings.dart';
 
 class MainApp extends StatefulWidget {
@@ -44,25 +44,7 @@ class _MainAppState extends State<MainApp> {
               ],
             ),
             floatingActionButton: FloatingActionButton.large(
-              onPressed: () => {
-                // Show notification
-                NotificationService.showNotification(
-                  id: 0,
-                  title: 'Knock knock!',
-                  body: 'Who\'s there?',
-                  notificationDetails: AndroidNotificationDetails(
-                    "knockChannel",
-                    "Knock Channel",
-                    channelDescription: "Knock knock channel",
-                    importance: Importance.high,
-                    priority: Priority.high,
-                    actions: <AndroidNotificationAction>[
-                      AndroidNotificationAction('knock_ack', 'Gotcha',
-                          showsUserInterface: false, cancelNotification: true),
-                    ],
-                  ),
-                )
-              },
+              onPressed: () => {ConnectionHandler.emit("knock", Knock())},
               child: const Icon(Icons.notifications),
             ),
             floatingActionButtonLocation:
@@ -101,5 +83,20 @@ class _MainAppState extends State<MainApp> {
             )),
       );
     });
+  }
+}
+
+class Knock {
+  String username = Settings.instance.username;
+  String message = Settings.instance.customMessage
+      .replaceAll("{user}", Settings.instance.username);
+  int id = DateTime.now().millisecondsSinceEpoch;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'message': message,
+      'id': id,
+    };
   }
 }
