@@ -22,12 +22,12 @@ class _SettingsViewState extends State<SettingsView> {
 
     _isConnected = ConnectionHandler.connectionStatus.value;
     ConnectionHandler.connectionStatus.addListener(() {
-     try {
+      try {
         setState(() {
           _isConnected = ConnectionHandler.connectionStatus.value;
         });
       } catch (e) {
-        print(e);
+        debugPrint("Error: $e");
       }
     });
 
@@ -83,11 +83,22 @@ class _SettingsViewState extends State<SettingsView> {
           controller: _messageController,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            labelText: 'Custom message',
+            labelText: 'Default message',
           ),
           onSubmitted: (_) => _saveSettings(),
         ),
         const SizedBox(height: 16),
+        Card(
+          child: SwitchListTile(
+            value: Settings.instance.allowHaptics,
+            onChanged: (value) async {
+              setState(() {
+                Settings.instance.allowHaptics = value;
+              });
+              await Settings.save();
+            },
+            title: const Text("Allow Haptics")),
+        ),
         Card(
           child: ListTile(
             title: const Text('Connection status'),

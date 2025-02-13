@@ -1,14 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:knoknok_mobile/models/settings_model.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ConnectionHandler {
-  static IO.Socket? socket;
+  static io.Socket? socket;
   static final ValueNotifier<bool> connectionStatus = ValueNotifier<bool>(false);
 
   static void initializeSocket() {
-    socket = IO.io(Settings.instance.serverUrl, <String, dynamic>{
+    socket = io.io(Settings.instance.serverUrl, <String, dynamic>{
       'transports': ['websocket'],
     });
 

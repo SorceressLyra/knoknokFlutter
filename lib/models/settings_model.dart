@@ -8,11 +8,14 @@ class Settings {
   String username;
   String serverUrl;
   String customMessage;
+  String get parsedMessage => customMessage.replaceAll('{user}', username);
+  bool allowHaptics;
 
   Settings._({
     this.username = 'You',
     this.serverUrl = 'http://localhost:3000',
     this.customMessage = '{user} says hello!',
+    this.allowHaptics = true,
   });
 
   static Future<void> initialize() async {
@@ -27,6 +30,7 @@ class Settings {
         username: json['username'] ?? 'User',
         serverUrl: json['serverUrl'] ?? 'http://localhost:8080',
         customMessage: json['customMessage'] ?? 'Knock knock!',
+        allowHaptics: json["allowHaptics"] ?? true,
       );
     } else {
       _instance = Settings._();
@@ -39,6 +43,7 @@ class Settings {
       'username': instance.username,
       'serverUrl': instance.serverUrl,
       'customMessage': instance.customMessage,
+      'allowHaptics': instance.allowHaptics,
     }));
   }
 }

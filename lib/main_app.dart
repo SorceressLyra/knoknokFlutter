@@ -1,7 +1,9 @@
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:knoknok_mobile/connection_handler.dart';
 import 'package:knoknok_mobile/home.dart';
+import 'package:knoknok_mobile/models/knock.dart';
 import 'package:knoknok_mobile/models/settings_model.dart';
 import 'package:knoknok_mobile/settings.dart';
 
@@ -9,10 +11,10 @@ class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
-  _MainAppState createState() => _MainAppState();
+  MainAppState createState() => MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class MainAppState extends State<MainApp> {
   final PageController _controller = PageController();
 
   int _currentPage = 0;
@@ -43,9 +45,17 @@ class _MainAppState extends State<MainApp> {
                 Center(child: SettingsView()),
               ],
             ),
-            floatingActionButton: FloatingActionButton.large(
-              onPressed: () => {ConnectionHandler.emit("knock", Knock())},
-              child: const Icon(Icons.notifications),
+            floatingActionButton: 
+            FloatingActionButton.large(
+              onPressed: () async {
+                ConnectionHandler.emit("knock", Knock.fromSettings(Settings.instance));
+                
+                bool canVibrate = await Haptics.canVibrate();
+                if (canVibrate && Settings.instance.allowHaptics) {
+                  await Haptics.vibrate(HapticsType.rigid);
+                }
+              },
+              child: const Icon(Icons.waving_hand),
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
@@ -83,20 +93,5 @@ class _MainAppState extends State<MainApp> {
             )),
       );
     });
-  }
-}
-
-class Knock {
-  String username = Settings.instance.username;
-  String message = Settings.instance.customMessage
-      .replaceAll("{user}", Settings.instance.username);
-  int id = DateTime.now().millisecondsSinceEpoch;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'username': username,
-      'message': message,
-      'id': id,
-    };
   }
 }

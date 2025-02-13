@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
@@ -22,7 +23,7 @@ class NotificationService {
 
   /// Handle notification tap
   static Future<void> _onNotificationTap(NotificationResponse response) async {
-    print("Active: Notification tapped: ${response.actionId}");
+    debugPrint("Active: Notification tapped: ${response.actionId}");
   }
 
   /// Show a basic notification

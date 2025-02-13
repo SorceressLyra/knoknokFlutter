@@ -1,7 +1,7 @@
 name: knoknok_mobile
 description: "Reach out to those you love with a simple tap"
 publish_to: 'none'
-version: 0.1.0
+version: 0.0.1
 
 environment:
   sdk: ^3.6.2
@@ -17,6 +17,8 @@ dependencies:
   url_launcher: ^6.3.1
   firebase_messaging: ^15.2.2
   firebase_core: ^3.11.0
+  intl: ^0.20.2
+  haptic_feedback: ^0.5.1+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
