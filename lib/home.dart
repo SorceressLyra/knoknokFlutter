@@ -1,3 +1,4 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:knoknok_mobile/models/knock.dart';
@@ -53,13 +54,15 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
-                        setState(() async {
+                        setState(() {
+                          knocks.remove(knock);
+                        }),
+                        () async {
                           if (Settings.instance.allowHaptics &&
                               await Haptics.canVibrate()) {
                             await Haptics.vibrate(HapticsType.selection);
                           }
-                          knocks.remove(knock);
-                        })
+                        }
                       },
                       icon: Icon(Icons.quickreply),
                     ),

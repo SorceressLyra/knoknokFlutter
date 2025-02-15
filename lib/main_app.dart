@@ -7,6 +7,8 @@ import 'package:knoknok_mobile/home.dart';
 import 'package:knoknok_mobile/models/knock.dart';
 import 'package:knoknok_mobile/models/settings_model.dart';
 import 'package:knoknok_mobile/settings.dart';
+import 'dart:io';
+
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -25,6 +27,7 @@ class MainAppState extends State<MainApp> {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme:
@@ -35,13 +38,23 @@ class MainAppState extends State<MainApp> {
         home: Scaffold(
             appBar: AppBar(
               title: Text(_currentPage == 0 ? 'Home' : 'Settings'),
+              actions: [
+                if(Platform.isWindows)
+                IconButton(
+                  tooltip: "Close to Tray",
+                  onPressed: () {
+                    appWindow.hide();
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
             ),
             body: PageView(
               controller: _controller,
               onPageChanged: (value) => setState(() {
                 _currentPage = value;
               }),
-              children: const [
+              children: [
                 Center(child: HomeView()),
                 Center(child: SettingsView()),
               ],
