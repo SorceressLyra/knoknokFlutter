@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:knoknok_mobile/connection_handler.dart';
+import 'package:knoknok_mobile/knock_manager.dart';
 import 'package:knoknok_mobile/models/knock.dart';
 import 'package:intl/intl.dart';
 import 'package:knoknok_mobile/models/settings_model.dart';
@@ -12,13 +14,29 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  List<Knock> knocks = [
-    Knock("Lyra", "Lyra loves you!", DateTime.now().millisecondsSinceEpoch),
-    Knock("Prism", "Prism misses you", DateTime.now().millisecondsSinceEpoch),
-    Knock("Oort", "Meow", DateTime.now().millisecondsSinceEpoch),
-  ];
-
+  List<Knock> knocks = [];
   bool usePredefinedMessage = true;
+
+  @override
+  void initState() {
+    super.initState();
+    knocks = KnockManager.instance.knocks;
+
+    KnockManager.instance.addListener(updateHomeState);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    KnockManager.instance.removeListener(updateHomeState);
+  }
+
+  void updateHomeState() {
+    setState(() {
+      knocks = KnockManager.instance.knocks;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +50,19 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   ListTile(
                     leading: knockIcon(knock.message),
+                    trailing: IconButton(
+                        onPressed: () => {
+                              setState(() {
+                                KnockManager.instance.removeKnock(knock);
+                              }),
+                              () async {
+                                if (Settings.instance.allowHaptics &&
+                                    await Haptics.canVibrate()) {
+                                  await Haptics.vibrate(HapticsType.selection);
+                                }
+                              }
+                            },
+                        icon: Icon(Icons.close)),
                     title: Text(knock.message,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(
@@ -53,8 +84,13 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
+                        ConnectionHandler.emit("knock_reply", {
+                          "target": knock.username,
+                          "sender": Settings.instance.username,
+                          "message": Settings.instance.parsedMessage
+                        }),
                         setState(() {
-                          knocks.remove(knock);
+                          KnockManager.instance.removeKnock(knock);
                         }),
                         () async {
                           if (Settings.instance.allowHaptics &&
@@ -90,6 +126,8 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<dynamic> replyDialog(BuildContext context, Knock knock) {
+    final TextEditingController messageController = TextEditingController();
+
     return showDialog(
         context: context,
         builder: (context) {
@@ -106,6 +144,7 @@ class _HomeViewState extends State<HomeView> {
                       title: Text("Use default message")),
                   if (!usePredefinedMessage)
                     TextField(
+                      controller: messageController,
                       decoration:
                           InputDecoration(labelText: "Enter your message"),
                     ),
@@ -117,7 +156,19 @@ class _HomeViewState extends State<HomeView> {
                   child: Text("Cancel"),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => {
+                    ConnectionHandler.emit("knock_reply", {
+                      "target": knock.username,
+                      "sender": Settings.instance.username,
+                      "message": usePredefinedMessage
+                          ? Settings.instance.parsedMessage
+                          : messageController.text
+                    }),
+                    Navigator.pop(context),
+                    setState(() {
+                      KnockManager.instance.removeKnock(knock);
+                    }),
+                  },
                   child: Text("Send"),
                 ),
               ],

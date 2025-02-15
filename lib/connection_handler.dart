@@ -1,11 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:knoknok_mobile/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ConnectionHandler {
   static io.Socket? socket;
-  static final ValueNotifier<bool> connectionStatus = ValueNotifier<bool>(false);
+  static final ValueNotifier<bool> connectionStatus =
+      ValueNotifier<bool>(false);
+
+  
 
   static void initializeSocket() {
     socket = io.io(Settings.instance.serverUrl, <String, dynamic>{
@@ -30,7 +32,7 @@ class ConnectionHandler {
 
     // Attempt to connects
     socket!.connect();
-    }
+  }
 
   static void disconnect() {
     socket?.dispose();
@@ -56,6 +58,11 @@ class ConnectionHandler {
   static void on(String event, Function(dynamic) callback) {
     socket?.on(event, callback);
   }
+
+    static void off(String event, Function(dynamic) callback) {
+    socket?.off(event, callback);
+  }
+
 
   static bool isConnected() {
     return socket?.connected ?? false;

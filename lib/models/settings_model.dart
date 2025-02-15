@@ -18,6 +18,13 @@ class Settings {
     this.allowHaptics = true,
   });
 
+
+  static Future<String> getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String settingsJson = prefs.getString('settings') ?? '{}';
+    return jsonDecode(settingsJson)['username'];
+  }
+  
   static Future<void> initialize() async {
     if (_instance != null) return;
     

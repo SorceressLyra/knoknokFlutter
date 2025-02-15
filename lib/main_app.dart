@@ -1,4 +1,3 @@
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
@@ -9,6 +8,7 @@ import 'package:knoknok_mobile/models/settings_model.dart';
 import 'package:knoknok_mobile/settings.dart';
 import 'dart:io';
 
+import 'package:window_manager/window_manager.dart';
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -23,30 +23,48 @@ class MainAppState extends State<MainApp> {
   int _currentPage = 0;
 
   @override
+  void initState() {
+    super.initState();
+    ConnectionHandler.connectionStatus.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    ConnectionHandler.connectionStatus.removeListener(() {
+      setState(() {});
+    });
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+          final ColorScheme? currentScheme = MediaQuery.of(context).platformBrightness == Brightness.light
+          ? lightDynamic
+          : darkDynamic;
+      
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme:
-              MediaQuery.of(context).platformBrightness == Brightness.light
-                  ? lightDynamic
-                  : darkDynamic,
+          colorScheme: currentScheme
         ),
         home: Scaffold(
             appBar: AppBar(
               title: Text(_currentPage == 0 ? 'Home' : 'Settings'),
               actions: [
-                if(Platform.isWindows)
-                IconButton(
-                  tooltip: "Close to Tray",
-                  onPressed: () {
-                    appWindow.hide();
-                  },
-                  icon: const Icon(Icons.close),
-                ),
+                if (Platform.isWindows)
+                  IconButton(
+                    tooltip: "Close to Tray",
+                    onPressed: () {
+                      windowManager.hide();
+                    },
+                    icon: const Icon(Icons.minimize),
+                  ),
               ],
             ),
             body: PageView(
@@ -59,17 +77,23 @@ class MainAppState extends State<MainApp> {
                 Center(child: SettingsView()),
               ],
             ),
-            floatingActionButton: 
-            FloatingActionButton.large(
-              onPressed: () async {
-                ConnectionHandler.emit("knock", Knock.fromSettings(Settings.instance));
-                
-                bool canVibrate = await Haptics.canVibrate();
-                if (canVibrate && Settings.instance.allowHaptics) {
-                  await Haptics.vibrate(HapticsType.rigid);
-                }
-              },
-              child: const Icon(Icons.waving_hand),
+            floatingActionButton: FloatingActionButton.large(
+              onPressed: ConnectionHandler.connectionStatus.value
+                  ? () async {
+                      ConnectionHandler.emit(
+                          "knock", Knock.fromSettings(Settings.instance));
+                      if (Settings.instance.allowHaptics &&
+                          await Haptics.canVibrate()) {
+                        await Haptics.vibrate(HapticsType.rigid);
+                      }
+                    }
+                  : null,
+              backgroundColor: ConnectionHandler.connectionStatus.value
+                  ? null
+                  : currentScheme?.surfaceContainerHigh,
+              child: Icon(ConnectionHandler.connectionStatus.value
+                  ? Icons.waving_hand
+                  : Icons.cloud_off),
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,

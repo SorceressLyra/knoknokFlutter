@@ -42,7 +42,7 @@ class NotificationService {
     );
 
     await _notifier.show(
-      id,
+      id % (1 << 31),
       title,
       body,
       NotificationDetails(android: notificationDetails ?? androidDetails),

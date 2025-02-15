@@ -12,7 +12,7 @@ class Knock {
 
   Knock.fromSettings(Settings settingsIntance){
     username = settingsIntance.username;
-    message = settingsIntance.customMessage;
+    message = settingsIntance.parsedMessage;
     id = DateTime.now().millisecondsSinceEpoch;
     time = DateTime.now();
   }
@@ -23,5 +23,9 @@ class Knock {
       'message': message,
       'id': id,
     };
+  }
+
+  static fromJson(data) {
+    return Knock(data['username'], data['message'], data['id']);
   }
 }

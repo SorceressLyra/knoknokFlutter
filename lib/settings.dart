@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:knoknok_mobile/connection_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:window_manager/window_manager.dart';
 import 'models/settings_model.dart';
 
 class SettingsView extends StatefulWidget {
@@ -21,15 +24,7 @@ class _SettingsViewState extends State<SettingsView> {
     super.initState();
 
     _isConnected = ConnectionHandler.connectionStatus.value;
-    ConnectionHandler.connectionStatus.addListener(() {
-      try {
-        setState(() {
-          _isConnected = ConnectionHandler.connectionStatus.value;
-        });
-      } catch (e) {
-        debugPrint("Error: $e");
-      }
-    });
+    ConnectionHandler.connectionStatus.addListener(settingsUpdate);
 
     _usernameController =
         TextEditingController(text: Settings.instance.username);
@@ -39,8 +34,20 @@ class _SettingsViewState extends State<SettingsView> {
         TextEditingController(text: Settings.instance.customMessage);
   }
 
+  void settingsUpdate() {
+     try {
+      setState(() {
+        _isConnected = ConnectionHandler.connectionStatus.value;
+      });
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
+
   @override
   void dispose() {
+    ConnectionHandler.connectionStatus.removeListener(settingsUpdate);
+
     _usernameController.dispose();
     _serverController.dispose();
     _messageController.dispose();
@@ -90,6 +97,7 @@ class _SettingsViewState extends State<SettingsView> {
         onSubmitted: (_) => _saveSettings(),
         ),
         const SizedBox(height: 16),
+        if(!Platform.isWindows)
         Card(
         child: SwitchListTile(
           value: Settings.instance.allowHaptics,
@@ -142,6 +150,15 @@ class _SettingsViewState extends State<SettingsView> {
         icon: Icon(Icons.info),
         label: const Text('About'),
         ),
+        const SizedBox(height: 16),
+        if(Platform.isWindows)
+        ElevatedButton.icon(
+        onPressed: () => {
+          windowManager.close(),
+        },
+        label: const Text('Close Knoknok'),
+        icon: Icon(Icons.exit_to_app),
+        )
       ],
       ),
     );
