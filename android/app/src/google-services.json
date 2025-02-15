@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050794976845",
+    "project_id": "knokknok-mobile",
+    "storage_bucket": "knokknok-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050794976845:android:bd30e2117265c16d99de04",
+        "android_client_info": {
+          "package_name": "com.example.knoknok_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnbV38SKffb_HXo2nQUJIdZmPty9X9TJQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
