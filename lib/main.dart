@@ -22,7 +22,9 @@ void main() async {
   ConnectionHandler.initializeSocket();
 
   // Initialize notifications
-  // NotificationService.initialize();
+  if(Platform.isAndroid){
+    NotificationService.initialize();
+  }
 
   debugPrint("${DateTime.now().toString()} - App started");
 
