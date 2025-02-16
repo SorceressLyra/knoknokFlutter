@@ -12,8 +12,8 @@ import 'package:knoknok/models/settings_model.dart';
 class FirebaseHandler {
   init() async {
     await Firebase.initializeApp(
-      //options: DefaultFirebaseOptions.currentPlatform,
-    );
+        //options: DefaultFirebaseOptions.currentPlatform,
+        );
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     await messaging.requestPermission(
@@ -52,19 +52,19 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       knockReplyNotif(data);
       break;
   }
-
-  
 }
 
 @pragma('vm:entry-point')
 void knockReplyNotif(data) async {
-  NotificationService.initialize();
 
+  //Ignore if the knock is not for me
   final username = await Settings.getUsername();
-  if(data["target"] != username) {
+  if (data["target"] != username) {
     return;
   }
-   NotificationService.showNotification(
+
+  NotificationService.initialize();
+  NotificationService.showNotification(
     id: DateTime.now().millisecondsSinceEpoch % (1 << 31),
     title: '${data["sender"]} got your knock',
     body: data["message"],
@@ -79,7 +79,12 @@ void knockReplyNotif(data) async {
 }
 
 @pragma('vm:entry-point')
-void knockNotif(data) {
+void knockNotif(data) async {
+  //Ignore if the knock is from the same user
+  final username = await Settings.getUsername();
+  if (data["username"] == username) {
+    return;
+  }
 
   NotificationService.initialize();
 
