@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:knoknok_mobile/connection_handler.dart';
+import 'package:knoknok/connection_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import 'models/settings_model.dart';

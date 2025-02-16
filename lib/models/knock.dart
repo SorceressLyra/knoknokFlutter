@@ -1,4 +1,4 @@
-import 'package:knoknok_mobile/models/settings_model.dart';
+import 'package:knoknok/models/settings_model.dart';
 
 class Knock {
   String username = "";

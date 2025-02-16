@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-//import 'package:knoknok_mobile/firebase_options.dart';
-import 'package:knoknok_mobile/android_notifier.dart';
-import 'package:knoknok_mobile/models/settings_model.dart';
+//import 'package:knoknok/firebase_options.dart';
+import 'package:knoknok/android_notifier.dart';
+import 'package:knoknok/models/settings_model.dart';
 
 class FirebaseHandler {
   init() async {

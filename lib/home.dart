@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok_mobile/connection_handler.dart';
-import 'package:knoknok_mobile/knock_manager.dart';
-import 'package:knoknok_mobile/models/knock.dart';
+import 'package:knoknok/connection_handler.dart';
+import 'package:knoknok/knock_manager.dart';
+import 'package:knoknok/models/knock.dart';
 import 'package:intl/intl.dart';
-import 'package:knoknok_mobile/models/settings_model.dart';
+import 'package:knoknok/models/settings_model.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});

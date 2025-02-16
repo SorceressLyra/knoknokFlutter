@@ -1,11 +1,11 @@
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok_mobile/connection_handler.dart';
-import 'package:knoknok_mobile/home.dart';
-import 'package:knoknok_mobile/models/knock.dart';
-import 'package:knoknok_mobile/models/settings_model.dart';
-import 'package:knoknok_mobile/settings.dart';
+import 'package:knoknok/connection_handler.dart';
+import 'package:knoknok/home.dart';
+import 'package:knoknok/models/knock.dart';
+import 'package:knoknok/models/settings_model.dart';
+import 'package:knoknok/settings.dart';
 import 'dart:io';
 
 import 'package:window_manager/window_manager.dart';

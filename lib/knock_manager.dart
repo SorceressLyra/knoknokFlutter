@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:knoknok_mobile/models/knock.dart';
+import 'package:knoknok/models/knock.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KnockManager extends ChangeNotifier {

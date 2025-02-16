@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knoknok_mobile/models/settings_model.dart';
+import 'package:knoknok/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ConnectionHandler {
