@@ -3,6 +3,7 @@ Knoknok is a simple desktop and mobile app to send notifications to those you ca
 
 ## Setup
 To use Knoknok you need a running [Knoknok Server](https://github.com/SorceressLyra/knoknokServer)
+
 Server setup is elaborated upon in it's repository.
 
 Once the server is running: 
