@@ -165,7 +165,7 @@ class _SettingsViewState extends State<SettingsView> {
                           }
                         },
                         icon: const Icon(Icons.link),
-                        label: const Text('Github'))
+                        label: const Text('My Github'))
                   ]),
             },
             icon: Icon(Icons.info),
