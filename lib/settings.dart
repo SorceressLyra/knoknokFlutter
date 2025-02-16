@@ -149,7 +149,7 @@ class _SettingsViewState extends State<SettingsView> {
                   context: context,
                   applicationName: 'Knoknok',
                   applicationVersion: '1.0.0',
-                  applicationIcon: const Icon(Icons.notifications),
+                  applicationIcon: const Icon(Icons.waving_hand),
                   children: [
                     const Text(
                         'Knoknok is a simple app to send pings to those you care about.'),
