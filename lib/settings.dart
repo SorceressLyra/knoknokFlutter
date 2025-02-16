@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class _SettingsViewState extends State<SettingsView> {
   late TextEditingController _usernameController;
   late TextEditingController _serverController;
   late TextEditingController _messageController;
-
+  late Timer? _debounceTimer;
   @override
   void initState() {
     super.initState();
@@ -35,7 +36,7 @@ class _SettingsViewState extends State<SettingsView> {
   }
 
   void settingsUpdate() {
-     try {
+    try {
       setState(() {
         _isConnected = ConnectionHandler.connectionStatus.value;
       });
@@ -68,98 +69,113 @@ class _SettingsViewState extends State<SettingsView> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
-      children: [
-        const SizedBox(height: 16),
-        TextField(
-        controller: _usernameController,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Username',
-        ),
-        onSubmitted: (_) => _saveSettings(),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-        controller: _serverController,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Server URL',
-        ),
-        onSubmitted: (_) => _saveSettings(),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-        controller: _messageController,
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Default message',
-        ),
-        onSubmitted: (_) => _saveSettings(),
-        ),
-        const SizedBox(height: 16),
-        if(!Platform.isWindows)
-        Card(
-        child: SwitchListTile(
-          value: Settings.instance.allowHaptics,
-          onChanged: (value) async {
-          setState(() {
-            Settings.instance.allowHaptics = value;
-          });
-          await Settings.save();
-          },
-          title: const Text("Allow Haptics")),
-        ),
-        Card(
-        child: ListTile(
-          title: const Text('Connection status'),
-          subtitleTextStyle: TextStyle(
-          color: _isConnected ? Colors.green : Colors.red,
+        children: [
+          const SizedBox(height: 16),
+          TextField(
+            controller: _usernameController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Username',
+            ),
+            onSubmitted: (_) => _saveSettings(),
+            onChanged: (_) {
+              _debounceTimer?.cancel();
+              _debounceTimer =
+                  Timer(const Duration(milliseconds: 500), _saveSettings);
+            },
           ),
-          subtitle: Text(_isConnected ? 'Connected' : 'Disconnected'),
-          trailing: IconButton.filled(
-            isSelected: false,
-            onPressed: () => {ConnectionHandler.reconnect()},
-            icon: Icon(Icons.refresh)),
-        ),
-        ),
-        ElevatedButton.icon(
-        onPressed: () => {
-          showAboutDialog(
-            context: context,
-            applicationName: 'Knoknok',
-            applicationVersion: '1.0.0',
-            applicationIcon: const Icon(Icons.notifications),
-            children: [
-            const Text(
-              'Knoknok is a simple app to send pings to those you care about.'),
-            const SizedBox(height: 16),
-            const Text('Made with ❤️ by Lyra S.R. Mikkelsen.'),
-            const SizedBox(height: 16),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _serverController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Server URL',
+            ),
+            onSubmitted: (_) => _saveSettings(),
+            onChanged: (_) {
+              _debounceTimer?.cancel();
+              _debounceTimer =
+                  Timer(const Duration(milliseconds: 500), _saveSettings);
+            },
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _messageController,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Default message',
+            ),
+            onSubmitted: (_) => _saveSettings(),
+            onChanged: (_) {
+              _debounceTimer?.cancel();
+              _debounceTimer =
+                  Timer(const Duration(milliseconds: 500), _saveSettings);
+            },
+          ),
+          const SizedBox(height: 16),
+          if (!Platform.isWindows)
+            Card(
+              child: SwitchListTile(
+                  value: Settings.instance.allowHaptics,
+                  onChanged: (value) async {
+                    setState(() {
+                      Settings.instance.allowHaptics = value;
+                    });
+                    await Settings.save();
+                  },
+                  title: const Text("Allow Haptics")),
+            ),
+          Card(
+            child: ListTile(
+              title: const Text('Connection status'),
+              subtitleTextStyle: TextStyle(
+                color: _isConnected ? Colors.green : Colors.red,
+              ),
+              subtitle: Text(_isConnected ? 'Connected' : 'Disconnected'),
+              trailing: IconButton.filled(
+                  isSelected: false,
+                  onPressed: () => {ConnectionHandler.reconnect()},
+                  icon: Icon(Icons.refresh)),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => {
+              showAboutDialog(
+                  context: context,
+                  applicationName: 'Knoknok',
+                  applicationVersion: '1.0.0',
+                  applicationIcon: const Icon(Icons.notifications),
+                  children: [
+                    const Text(
+                        'Knoknok is a simple app to send pings to those you care about.'),
+                    const SizedBox(height: 16),
+                    const Text('Made with ❤️ by Lyra S.R. Mikkelsen.'),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                        onPressed: () async {
+                          final url =
+                              Uri.parse("https://github.com/SorceressLyra");
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          }
+                        },
+                        icon: const Icon(Icons.link),
+                        label: const Text('Github'))
+                  ]),
+            },
+            icon: Icon(Icons.info),
+            label: const Text('About'),
+          ),
+          const SizedBox(height: 16),
+          if (Platform.isWindows)
             ElevatedButton.icon(
-              onPressed: () async {
-                final url =
-                  Uri.parse("https://github.com/SorceressLyra");
-                if (await canLaunchUrl(url)) {
-                await launchUrl(url);
-                }
+              onPressed: () => {
+                windowManager.close(),
               },
-              icon: const Icon(Icons.link),
-              label: const Text('Github'))
-            ]),
-        },
-        icon: Icon(Icons.info),
-        label: const Text('About'),
-        ),
-        const SizedBox(height: 16),
-        if(Platform.isWindows)
-        ElevatedButton.icon(
-        onPressed: () => {
-          windowManager.close(),
-        },
-        label: const Text('Close Knoknok'),
-        icon: Icon(Icons.exit_to_app),
-        )
-      ],
+              label: const Text('Close Knoknok'),
+              icon: Icon(Icons.exit_to_app),
+            )
+        ],
       ),
     );
   }
