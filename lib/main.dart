@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:knoknok/connection_handler.dart';
 import 'package:knoknok/firebase_handler.dart';
 import 'package:knoknok/knock_manager.dart';
@@ -76,6 +77,21 @@ handleKnockReply(data) {
 
   if (knockReply.target != Settings.instance.username) {
     return;
+  }
+
+  if (Platform.isAndroid) {
+    NotificationService.showNotification(
+      id: DateTime.now().millisecondsSinceEpoch % (1 << 31),
+      title: '${knockReply.sender} got your knock',
+      body: knockReply.message,
+      notificationDetails: AndroidNotificationDetails(
+        "knockReplyChannel",
+        "Knock Reply Notification",
+        channelDescription: "Knock knock channel",
+        importance: Importance.high,
+        priority: Priority.high,
+      ),
+    );
   }
 
   if (Platform.isWindows) {

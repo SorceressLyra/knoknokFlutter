@@ -19,7 +19,8 @@ class _SettingsViewState extends State<SettingsView> {
   late TextEditingController _usernameController;
   late TextEditingController _serverController;
   late TextEditingController _messageController;
-  late Timer? _debounceTimer;
+  Timer? _debounceTimer;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +62,11 @@ class _SettingsViewState extends State<SettingsView> {
     Settings.instance.customMessage = _messageController.text;
     await Settings.save();
 
+    debugPrint('Settings saved');
+
+    debugPrint('Reconnecting');
     ConnectionHandler.reconnect();
+
   }
 
   @override
@@ -81,7 +86,7 @@ class _SettingsViewState extends State<SettingsView> {
             onChanged: (_) {
               _debounceTimer?.cancel();
               _debounceTimer =
-                  Timer(const Duration(milliseconds: 500), _saveSettings);
+                  Timer(const Duration(milliseconds: 1000), _saveSettings);
             },
           ),
           const SizedBox(height: 16),
@@ -95,7 +100,7 @@ class _SettingsViewState extends State<SettingsView> {
             onChanged: (_) {
               _debounceTimer?.cancel();
               _debounceTimer =
-                  Timer(const Duration(milliseconds: 500), _saveSettings);
+                  Timer(const Duration(milliseconds: 1000), _saveSettings);
             },
           ),
           const SizedBox(height: 16),
@@ -109,7 +114,7 @@ class _SettingsViewState extends State<SettingsView> {
             onChanged: (_) {
               _debounceTimer?.cancel();
               _debounceTimer =
-                  Timer(const Duration(milliseconds: 500), _saveSettings);
+                  Timer(const Duration(milliseconds: 1000), _saveSettings);
             },
           ),
           const SizedBox(height: 16),
