@@ -25,8 +25,8 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     super.initState();
 
-    _isConnected = ConnectionHandler.connectionStatus.value;
-    ConnectionHandler.connectionStatus.addListener(settingsUpdate);
+    _isConnected = ConnectionController.connectionStatus.value;
+    ConnectionController.connectionStatus.addListener(settingsUpdate);
 
     _usernameController =
         TextEditingController(text: Settings.instance.username);
@@ -39,7 +39,7 @@ class _SettingsViewState extends State<SettingsView> {
   void settingsUpdate() {
     try {
       setState(() {
-        _isConnected = ConnectionHandler.connectionStatus.value;
+        _isConnected = ConnectionController.connectionStatus.value;
       });
     } catch (e) {
       debugPrint("Error: $e");
@@ -48,7 +48,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   void dispose() {
-    ConnectionHandler.connectionStatus.removeListener(settingsUpdate);
+    ConnectionController.connectionStatus.removeListener(settingsUpdate);
 
     _usernameController.dispose();
     _serverController.dispose();
@@ -65,7 +65,7 @@ class _SettingsViewState extends State<SettingsView> {
     debugPrint('Settings saved');
 
     debugPrint('Reconnecting');
-    ConnectionHandler.reconnect();
+    ConnectionController.reconnect();
 
   }
 
@@ -139,7 +139,7 @@ class _SettingsViewState extends State<SettingsView> {
               subtitle: Text(_isConnected ? 'Connected' : 'Disconnected'),
               trailing: IconButton.filled(
                   isSelected: false,
-                  onPressed: () => {ConnectionHandler.reconnect()},
+                  onPressed: () => {ConnectionController.reconnect()},
                   icon: Icon(Icons.refresh)),
             ),
           ),

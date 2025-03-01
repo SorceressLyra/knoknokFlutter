@@ -2,13 +2,9 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:knoknok/controllers/connection_controller.dart';
 import 'package:knoknok/firebase/firebase_handler.dart';
 import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/main_app.dart';
-import 'package:knoknok/models/knock.dart';
-import 'package:knoknok/models/knock_reply.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:knoknok/android_notifier.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -25,26 +21,12 @@ void main() async {
     NotificationService.initialize();
   }
 
-  await KnockManager.instance.initialize();
+  await KnockController.instance.initialize();
 
   // Load settings
   await Settings.initialize();
 
-  // Connect to server
-  ConnectionHandler.initializeSocket();
 
-  // Listen for connection status changes
-  ConnectionHandler.connectionStatus.addListener(() {
-    if (ConnectionHandler.connectionStatus.value == true) {
-      ConnectionHandler.on("knock_broadcast", KnockManager.instance.handleKnock);
-      ConnectionHandler.on("knock_reply_broadcast", KnockManager.instance.handleKnockReply);
-    }
-
-    if (ConnectionHandler.connectionStatus.value == false) {
-      ConnectionHandler.off("knock_broadcast", KnockManager.instance.handleKnock);
-      ConnectionHandler.off("knock_reply_broadcast", KnockManager.instance.handleKnockReply);
-    }
-  });
 
   await initializeWindows();
   runApp(const MainApp());

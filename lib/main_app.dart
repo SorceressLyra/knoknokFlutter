@@ -25,14 +25,14 @@ class MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    ConnectionHandler.connectionStatus.addListener(() {
+    ConnectionController.connectionStatus.addListener(() {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    ConnectionHandler.connectionStatus.removeListener(() {
+    ConnectionController.connectionStatus.removeListener(() {
       setState(() {});
     });
     _controller.dispose();
@@ -78,9 +78,9 @@ class MainAppState extends State<MainApp> {
               ],
             ),
             floatingActionButton: FloatingActionButton.large(
-              onPressed: ConnectionHandler.connectionStatus.value
+              onPressed: ConnectionController.connectionStatus.value
                   ? () async {
-                      ConnectionHandler.emit(
+                      ConnectionController.emit(
                           "knock", Knock.fromSettings(Settings.instance));
                       if (Settings.instance.allowHaptics &&
                           await Haptics.canVibrate()) {
@@ -88,10 +88,10 @@ class MainAppState extends State<MainApp> {
                       }
                     }
                   : null,
-              backgroundColor: ConnectionHandler.connectionStatus.value
+              backgroundColor: ConnectionController.connectionStatus.value
                   ? null
                   : currentScheme?.surfaceContainerHigh,
-              child: Icon(ConnectionHandler.connectionStatus.value
+              child: Icon(ConnectionController.connectionStatus.value
                   ? Icons.waving_hand
                   : Icons.cloud_off),
             ),

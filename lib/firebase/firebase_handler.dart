@@ -88,8 +88,8 @@ void knockNotif(data) async {
 
   NotificationService.initialize();
 
-  KnockManager.instance.initialize();
-  KnockManager.instance.addKnock(Knock.fromJson(data));
+  KnockController.instance.initialize();
+  KnockController.instance.addKnock(Knock.fromJson(data));
 
   NotificationService.showNotification(
     id: data["id"] % 10000,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class ConnectionHandler {
+class ConnectionController {
   static io.Socket? socket;
   static final ValueNotifier<bool> connectionStatus =
       ValueNotifier<bool>(false);

@@ -20,21 +20,21 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    knocks = KnockManager.instance.knocks;
+    knocks = KnockController.instance.knocks;
 
-    KnockManager.instance.addListener(updateHomeState);
+    KnockController.instance.addListener(updateHomeState);
   }
 
   @override
   void dispose() {
     super.dispose();
 
-    KnockManager.instance.removeListener(updateHomeState);
+    KnockController.instance.removeListener(updateHomeState);
   }
 
   void updateHomeState() {
     setState(() {
-      knocks = KnockManager.instance.knocks;
+      knocks = KnockController.instance.knocks;
     });
   }
 
@@ -53,7 +53,7 @@ class _HomeViewState extends State<HomeView> {
                     trailing: IconButton(
                         onPressed: () => {
                               setState(() {
-                                KnockManager.instance.removeKnock(knock);
+                                KnockController.instance.removeKnock(knock);
                               }),
                               () async {
                                 if (Settings.instance.allowHaptics &&
@@ -84,13 +84,13 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
-                        ConnectionHandler.emit("knock_reply", {
+                        ConnectionController.emit("knock_reply", {
                           "target": knock.username,
                           "sender": Settings.instance.username,
                           "message": Settings.instance.parsedMessage
                         }),
                         setState(() {
-                          KnockManager.instance.removeKnock(knock);
+                          KnockController.instance.removeKnock(knock);
                         }),
                         () async {
                           if (Settings.instance.allowHaptics &&
@@ -157,7 +157,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 TextButton(
                   onPressed: () => {
-                    ConnectionHandler.emit("knock_reply", {
+                    ConnectionController.emit("knock_reply", {
                       "target": knock.username,
                       "sender": Settings.instance.username,
                       "message": usePredefinedMessage
@@ -166,7 +166,7 @@ class _HomeViewState extends State<HomeView> {
                     }),
                     Navigator.pop(context),
                     setState(() {
-                      KnockManager.instance.removeKnock(knock);
+                      KnockController.instance.removeKnock(knock);
                     }),
                   },
                   child: Text("Send"),

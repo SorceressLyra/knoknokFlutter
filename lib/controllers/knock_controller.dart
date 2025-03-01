@@ -12,14 +12,14 @@ import 'package:local_notifier/local_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
-class KnockManager extends ChangeNotifier {
-  static final KnockManager _instance = KnockManager._internal();
-  static KnockManager get instance => _instance;
+class KnockController extends ChangeNotifier {
+  static final KnockController _instance = KnockController._internal();
+  static KnockController get instance => _instance;
 
   List<Knock> _knocks = [];
   List<Knock> get knocks => _knocks;
 
-  KnockManager._internal();
+  KnockController._internal();
 
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
@@ -69,7 +69,7 @@ class KnockManager extends ChangeNotifier {
     return;
   }
 
-  KnockManager.instance.addKnock(knock);
+  KnockController.instance.addKnock(knock);
   if (Platform.isWindows) {
     LocalNotification notification = LocalNotification(
       title: "Knock from ${knock.username}",
