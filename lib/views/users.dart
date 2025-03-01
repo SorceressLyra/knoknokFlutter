@@ -20,7 +20,7 @@ class _UserViewState extends State<UserView> {
           isSelected: false,
           icon: Icon(Icons.message),
           onPressed: () => {
-            ConnectionController.emit("knock", Knock(
+            ConnectionController.emit("knock_send", Knock(
               sender: Settings.instance.username,
               isReply: false,
               message: "Knock knock!",
