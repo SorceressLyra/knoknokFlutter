@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:knoknok/controllers/connection_controller.dart';
 import 'package:knoknok/firebase/firebase_handler.dart';
 import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/main_app.dart';
+import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:knoknok/android_notifier.dart';
 import 'package:local_notifier/local_notifier.dart';
@@ -15,6 +17,9 @@ void main() async {
   //Initialize
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load settings
+  await Settings.initialize();
+  
   // Initialize Firebase
   if (Platform.isAndroid) {
     FirebaseHandler().init();
@@ -23,15 +28,18 @@ void main() async {
 
   await KnockController.instance.initialize();
 
-  // Load settings
-  await Settings.initialize();
 
 
+  // Initialize connection controller
+  ConnectionController.initializeSocket();
+  ConnectionController.addListener("knock", KnockController.instance.handleKnock); //Global broadcasts
+  ConnectionController.addListener("knock_${Settings.instance.username}", KnockController.instance.handleKnock); //Targeted
 
   await initializeWindows();
   runApp(const MainApp());
 }
 
+// Desktop specific code
 Future<void> initializeWindows() async {
   if (!Platform.isWindows) {
     return;

@@ -43,16 +43,14 @@ class MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-          final ColorScheme? currentScheme = MediaQuery.of(context).platformBrightness == Brightness.light
-          ? lightDynamic
-          : darkDynamic;
-      
+      final ColorScheme? currentScheme =
+          MediaQuery.of(context).platformBrightness == Brightness.light
+              ? lightDynamic
+              : darkDynamic;
+
       return MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: currentScheme
-        ),
+        theme: ThemeData(useMaterial3: true, colorScheme: currentScheme),
         home: Scaffold(
             appBar: AppBar(
               title: Text(_currentPage == 0 ? 'Home' : 'Settings'),
@@ -81,7 +79,7 @@ class MainAppState extends State<MainApp> {
               onPressed: ConnectionController.connectionStatus.value
                   ? () async {
                       ConnectionController.emit(
-                          "knock", Knock.fromSettings(Settings.instance));
+                          "knock_send", Knock.fromSettings(Settings.instance));
                       if (Settings.instance.allowHaptics &&
                           await Haptics.canVibrate()) {
                         await Haptics.vibrate(HapticsType.rigid);

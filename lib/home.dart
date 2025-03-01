@@ -66,7 +66,7 @@ class _HomeViewState extends State<HomeView> {
                     title: Text(knock.message,
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     subtitle: Text(
-                        "From ${knock.username} at ${DateFormat('HH:mm E').format(knock.time)}"),
+                        "From ${knock.sender} at ${DateFormat('HH:mm E').format(knock.time)}"),
                   ),
                   SizedBox(height: 10),
                   Row(children: [
@@ -84,11 +84,11 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
-                        ConnectionController.emit("knock_reply", {
-                          "target": knock.username,
-                          "sender": Settings.instance.username,
-                          "message": Settings.instance.parsedMessage
-                        }),
+                        ConnectionController.emit("knock_send", Knock(
+                            sender: Settings.instance.username,
+                            receiver: knock.sender,
+                            isReply: true,
+                            message: "Gotcha Knock!",)),
                         setState(() {
                           KnockController.instance.removeKnock(knock);
                         }),
@@ -133,7 +133,7 @@ class _HomeViewState extends State<HomeView> {
         builder: (context) {
           return StatefulBuilder(builder: (context, setState) {
             return AlertDialog(
-              title: Text("Reply to ${knock.username}?"),
+              title: Text("Reply to ${knock.sender}?"),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -158,7 +158,7 @@ class _HomeViewState extends State<HomeView> {
                 TextButton(
                   onPressed: () => {
                     ConnectionController.emit("knock_reply", {
-                      "target": knock.username,
+                      "target": knock.sender,
                       "sender": Settings.instance.username,
                       "message": usePredefinedMessage
                           ? Settings.instance.parsedMessage

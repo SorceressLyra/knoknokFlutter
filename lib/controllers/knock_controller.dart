@@ -3,10 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:knoknok/android_notifier.dart';
 import 'package:knoknok/models/knock.dart';
-import 'package:knoknok/models/knock_reply.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:local_notifier/local_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,14 +62,14 @@ class KnockController extends ChangeNotifier {
   final knock = Knock.fromJson(data);
 
   knock.time = DateTime.now();
-  if (knock.username == Settings.instance.username) {
+  if (knock.sender == Settings.instance.username) {
     return;
   }
 
   KnockController.instance.addKnock(knock);
   if (Platform.isWindows) {
     LocalNotification notification = LocalNotification(
-      title: "Knock from ${knock.username}",
+      title: "Knock from ${knock.sender}",
       body: knock.message,
     );
     notification.onClick = () {
@@ -82,42 +79,6 @@ class KnockController extends ChangeNotifier {
     notification.show();
   }
 }
-
-handleKnockReply(data) {
-  final knockReply = KnockReply.fromJson(data);
-
-  if (knockReply.target != Settings.instance.username) {
-    return;
-  }
-
-  if (Platform.isAndroid) {
-    NotificationService.showNotification(
-      id: DateTime.now().millisecondsSinceEpoch % (1 << 31),
-      title: '${knockReply.sender} got your knock',
-      body: knockReply.message,
-      notificationDetails: AndroidNotificationDetails(
-        "knockReplyChannel",
-        "Knock Reply Notification",
-        channelDescription: "Knock knock channel",
-        importance: Importance.high,
-        priority: Priority.high,
-      ),
-    );
-  }
-
-  if (Platform.isWindows) {
-    LocalNotification notification = LocalNotification(
-      title: "${knockReply.sender} got your knock",
-      body: knockReply.message,
-    );
-    notification.onClick = () {
-      windowManager.show();
-      windowManager.focus();
-    };
-    notification.show();
-  }
-}
-
   int get knockCount => _knocks.length;
 
   bool get hasKnocks => _knocks.isNotEmpty;

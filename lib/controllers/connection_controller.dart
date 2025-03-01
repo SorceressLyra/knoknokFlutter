@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class ConnectionController {
   static io.Socket? socket;
+  static final Map<String, Function(dynamic)> _listeners = {};
   static final ValueNotifier<bool> connectionStatus =
       ValueNotifier<bool>(false);
 
@@ -29,6 +31,7 @@ class ConnectionController {
     socket!.onError((err) {
       connectionStatus.value = false;
     });
+    
 
     // Attempt to connects
     socket!.connect();
@@ -37,6 +40,7 @@ class ConnectionController {
   static void disconnect() {
     socket?.dispose();
     socket = null;
+    _listeners.clear();
     connectionStatus.value = false;
   }
 
@@ -46,6 +50,11 @@ class ConnectionController {
       socket = null;
 
       initializeSocket();
+
+      //re-add listeners
+      _listeners.forEach((event, callback) {
+        socket!.on(event, callback);
+      });
     }
   }
 
@@ -55,16 +64,14 @@ class ConnectionController {
     }
   }
 
-  static void on(String event, Function(dynamic) callback) {
-    socket?.on(event, callback);
+  static void addListener(String event, Function(dynamic) callback) {
+    _listeners[event] = callback;
+    socket!.on(event, callback);
   }
 
-    static void off(String event, Function(dynamic) callback) {
-    socket?.off(event, callback);
+  static void removeListener(String event) {
+    _listeners.remove(event);
+    socket!.off(event);
   }
 
-
-  static bool isConnected() {
-    return socket?.connected ?? false;
-  }
 }

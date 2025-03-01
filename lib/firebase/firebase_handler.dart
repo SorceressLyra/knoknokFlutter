@@ -26,7 +26,7 @@ class FirebaseHandler {
       sound: true,
     );
     await FirebaseMessaging.instance.subscribeToTopic("knock");
-    await FirebaseMessaging.instance.subscribeToTopic("knock_reply");
+    await FirebaseMessaging.instance.subscribeToTopic("knock_${Settings.instance.username}");
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
 
@@ -93,7 +93,7 @@ void knockNotif(data) async {
 
   NotificationService.showNotification(
     id: data["id"] % 10000,
-    title: 'Knock from ${data["username"]}',
+    title: 'Knock from ${data["sender"]}',
     body: data["message"],
     notificationDetails: AndroidNotificationDetails(
       "knockChannel",

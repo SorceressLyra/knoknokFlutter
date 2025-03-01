@@ -1,17 +1,27 @@
 import 'package:knoknok/models/settings_model.dart';
 
 class Knock {
-  String username = "";
+  String sender = "";
   String message = "";
+  String receiver = "";
+  bool isReply = false;
   int id = -1;
   DateTime time = DateTime(0);
-  
-  Knock(this.username, this.message, this.id){
+
+  Knock({
+    this.sender = "",
+    this.message = "",
+    this.receiver = "",
+    this.isReply = false,
+  }){
     time = DateTime.now();
+    id = DateTime.now().millisecondsSinceEpoch;
   }
 
-  Knock.fromSettings(Settings settingsIntance){
-    username = settingsIntance.username;
+  Knock.fromSettings(Settings settingsIntance) {
+    sender = settingsIntance.username;
+    receiver = "BROADCAST_ALL";
+    isReply = false;
     message = settingsIntance.parsedMessage;
     id = DateTime.now().millisecondsSinceEpoch;
     time = DateTime.now();
@@ -19,13 +29,22 @@ class Knock {
 
   Map<String, dynamic> toJson() {
     return {
-      'username': username,
+      'sender': sender,
+      'receiver': receiver, // corrected 'reciever' to 'receiver'
+      'isReply': isReply,
       'message': message,
       'id': id,
     };
   }
 
-  static fromJson(data) {
-    return Knock(data['username'], data['message'], data['id']);
+  static Knock fromJson(Map<String, dynamic> data) {
+    final knock = Knock();
+    knock.sender = data['sender'] ?? "";
+    knock.receiver = data['receiver'] ?? "";
+    knock.isReply = data['isReply'] ?? false;
+    knock.message = data['message'] ?? "";
+    knock.id = data['id'] ?? DateTime.now().millisecondsSinceEpoch;
+
+    return knock;
   }
 }
