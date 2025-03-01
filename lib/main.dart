@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:knoknok/connection_handler.dart';
-import 'package:knoknok/firebase_handler.dart';
-import 'package:knoknok/knock_manager.dart';
+import 'package:knoknok/controllers/connection_controller.dart';
+import 'package:knoknok/firebase/firebase_handler.dart';
+import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/main_app.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/knock_reply.dart';
@@ -36,75 +36,18 @@ void main() async {
   // Listen for connection status changes
   ConnectionHandler.connectionStatus.addListener(() {
     if (ConnectionHandler.connectionStatus.value == true) {
-      ConnectionHandler.on("knock_broadcast", handleKnock);
-      ConnectionHandler.on("knock_reply_broadcast", handleKnockReply);
+      ConnectionHandler.on("knock_broadcast", KnockManager.instance.handleKnock);
+      ConnectionHandler.on("knock_reply_broadcast", KnockManager.instance.handleKnockReply);
     }
 
     if (ConnectionHandler.connectionStatus.value == false) {
-      ConnectionHandler.off("knock_broadcast", handleKnock);
-      ConnectionHandler.off("knock_reply_broadcast", handleKnockReply);
+      ConnectionHandler.off("knock_broadcast", KnockManager.instance.handleKnock);
+      ConnectionHandler.off("knock_reply_broadcast", KnockManager.instance.handleKnockReply);
     }
   });
 
   await initializeWindows();
   runApp(const MainApp());
-}
-
-void handleKnock(data) {
-  final knock = Knock.fromJson(data);
-
-  knock.time = DateTime.now();
-  if (knock.username == Settings.instance.username) {
-    return;
-  }
-
-  KnockManager.instance.addKnock(knock);
-  if (Platform.isWindows) {
-    LocalNotification notification = LocalNotification(
-      title: "Knock from ${knock.username}",
-      body: knock.message,
-    );
-    notification.onClick = () {
-      windowManager.show();
-      windowManager.focus();
-    };
-    notification.show();
-  }
-}
-
-handleKnockReply(data) {
-  final knockReply = KnockReply.fromJson(data);
-
-  if (knockReply.target != Settings.instance.username) {
-    return;
-  }
-
-  if (Platform.isAndroid) {
-    NotificationService.showNotification(
-      id: DateTime.now().millisecondsSinceEpoch % (1 << 31),
-      title: '${knockReply.sender} got your knock',
-      body: knockReply.message,
-      notificationDetails: AndroidNotificationDetails(
-        "knockReplyChannel",
-        "Knock Reply Notification",
-        channelDescription: "Knock knock channel",
-        importance: Importance.high,
-        priority: Priority.high,
-      ),
-    );
-  }
-
-  if (Platform.isWindows) {
-    LocalNotification notification = LocalNotification(
-      title: "${knockReply.sender} got your knock",
-      body: knockReply.message,
-    );
-    notification.onClick = () {
-      windowManager.show();
-      windowManager.focus();
-    };
-    notification.show();
-  }
 }
 
 Future<void> initializeWindows() async {

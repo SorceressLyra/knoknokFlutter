@@ -1,7 +1,7 @@
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok/connection_handler.dart';
+import 'package:knoknok/controllers/connection_controller.dart';
 import 'package:knoknok/home.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';

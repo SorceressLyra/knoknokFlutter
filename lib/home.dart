@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok/connection_handler.dart';
-import 'package:knoknok/knock_manager.dart';
+import 'package:knoknok/controllers/connection_controller.dart';
+import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:intl/intl.dart';
 import 'package:knoknok/models/settings_model.dart';

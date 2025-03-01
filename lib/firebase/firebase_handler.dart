@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 //import 'package:knoknok/firebase_options.dart';
 import 'package:knoknok/android_notifier.dart';
-import 'package:knoknok/knock_manager.dart';
+import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
 
