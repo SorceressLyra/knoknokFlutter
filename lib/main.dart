@@ -6,7 +6,6 @@ import 'package:knoknok/controllers/connection_controller.dart';
 import 'package:knoknok/firebase/firebase_handler.dart';
 import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/main_app.dart';
-import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:knoknok/android_notifier.dart';
 import 'package:local_notifier/local_notifier.dart';

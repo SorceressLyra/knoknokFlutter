@@ -43,6 +43,16 @@ class _HomeViewState extends State<HomeView> {
     return Center(
         child: ListView(
       children: [
+        if (knocks.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'No Knocks yet!',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ),
         for (var knock in knocks)
           Card(
               clipBehavior: Clip.antiAlias,
@@ -56,17 +66,14 @@ class _HomeViewState extends State<HomeView> {
                                 KnockController.instance.removeKnock(knock);
                               }),
                               () async {
-                                if (Settings.instance.allowHaptics &&
-                                    await Haptics.canVibrate()) {
+                                if (Settings.instance.allowHaptics && await Haptics.canVibrate()) {
                                   await Haptics.vibrate(HapticsType.selection);
                                 }
                               }
                             },
                         icon: Icon(Icons.close)),
-                    title: Text(knock.message,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                        "From ${knock.sender} at ${DateFormat('HH:mm E').format(knock.time)}"),
+                    title: Text(knock.message, style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text("From ${knock.sender} at ${DateFormat('HH:mm E').format(knock.time)}"),
                   ),
                   SizedBox(height: 10),
                   Row(children: [
@@ -84,17 +91,19 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
-                        ConnectionController.emit("knock_send", Knock(
-                            sender: Settings.instance.username,
-                            receiver: knock.sender,
-                            isReply: true,
-                            message: "Gotcha Knock!",)),
+                        ConnectionController.emit(
+                            "knock_send",
+                            Knock(
+                              sender: Settings.instance.username,
+                              receiver: knock.sender,
+                              isReply: true,
+                              message: "Gotcha Knock!",
+                            )),
                         setState(() {
                           KnockController.instance.removeKnock(knock);
                         }),
                         () async {
-                          if (Settings.instance.allowHaptics &&
-                              await Haptics.canVibrate()) {
+                          if (Settings.instance.allowHaptics && await Haptics.canVibrate()) {
                             await Haptics.vibrate(HapticsType.selection);
                           }
                         }
@@ -137,16 +146,11 @@ class _HomeViewState extends State<HomeView> {
               content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  SwitchListTile(
-                      value: usePredefinedMessage,
-                      onChanged: (value) =>
-                          setState(() => usePredefinedMessage = value),
-                      title: Text("Use default message")),
+                  SwitchListTile(value: usePredefinedMessage, onChanged: (value) => setState(() => usePredefinedMessage = value), title: Text("Use default message")),
                   if (!usePredefinedMessage)
                     TextField(
                       controller: messageController,
-                      decoration:
-                          InputDecoration(labelText: "Enter your message"),
+                      decoration: InputDecoration(labelText: "Enter your message"),
                     ),
                 ]),
               ),
@@ -157,13 +161,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 TextButton(
                   onPressed: () => {
-                    ConnectionController.emit("knock_reply", {
-                      "target": knock.sender,
-                      "sender": Settings.instance.username,
-                      "message": usePredefinedMessage
-                          ? Settings.instance.parsedMessage
-                          : messageController.text
-                    }),
+                    ConnectionController.emit("knock_reply", {"target": knock.sender, "sender": Settings.instance.username, "message": usePredefinedMessage ? Settings.instance.parsedMessage : messageController.text}),
                     Navigator.pop(context),
                     setState(() {
                       KnockController.instance.removeKnock(knock);

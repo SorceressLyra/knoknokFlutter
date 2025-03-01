@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:knoknok/controllers/connection_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
-import 'models/settings_model.dart';
+import '../models/settings_model.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});

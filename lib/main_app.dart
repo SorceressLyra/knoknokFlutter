@@ -2,10 +2,11 @@ import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:knoknok/controllers/connection_controller.dart';
-import 'package:knoknok/home.dart';
+import 'package:knoknok/views/home.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
-import 'package:knoknok/settings.dart';
+import 'package:knoknok/views/settings.dart';
+import 'package:knoknok/views/users.dart';
 import 'dart:io';
 
 import 'package:window_manager/window_manager.dart';
@@ -53,7 +54,7 @@ class MainAppState extends State<MainApp> {
         theme: ThemeData(useMaterial3: true, colorScheme: currentScheme),
         home: Scaffold(
             appBar: AppBar(
-              title: Text(_currentPage == 0 ? 'Home' : 'Settings'),
+              title: Text(_currentPage == 0 ? 'Home' : _currentPage == 1 ? 'Users' : 'Settings'),
               actions: [
                 if (Platform.isWindows)
                   IconButton(
@@ -72,6 +73,7 @@ class MainAppState extends State<MainApp> {
               }),
               children: [
                 Center(child: HomeView()),
+                Center(child: UserView()),
                 Center(child: SettingsView()),
               ],
             ),
@@ -94,7 +96,7 @@ class MainAppState extends State<MainApp> {
                   : Icons.cloud_off),
             ),
             floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerDocked,
+                FloatingActionButtonLocation.endDocked,
             bottomNavigationBar: BottomAppBar(
               shape: const CircularNotchedRectangle(),
               child: Row(
@@ -111,13 +113,25 @@ class MainAppState extends State<MainApp> {
                       icon: const Icon(Icons.home),
                     ),
                   ),
-                  Padding(
+                    Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton.filled(
                       isSelected: _currentPage == 1,
                       onPressed: () {
                         setState(() {
                           _controller.jumpToPage(1);
+                        });
+                      },
+                      icon: const Icon(Icons.person),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton.filled(
+                      isSelected: _currentPage == 2,
+                      onPressed: () {
+                        setState(() {
+                          _controller.jumpToPage(2);
                         });
                       },
                       icon: const Icon(Icons.settings),
