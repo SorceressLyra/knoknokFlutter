@@ -1,6 +1,11 @@
 # Knoknok
 Knoknok is a simple desktop and mobile app to send notifications to those you care about.
 
+## In Development
+- Local connections with device discovery.
+- Rework of Knock model for expandability.
+- Refactoring and Optimizations.
+
 ## Setup
 To use Knoknok you need a running [Knoknok Server](https://github.com/SorceressLyra/knoknokServer)
 
