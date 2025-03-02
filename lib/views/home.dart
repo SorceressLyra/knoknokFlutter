@@ -1,12 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok/controllers/connection_controller.dart';
+import 'package:knoknok/controllers/socket_io_controller.dart';
 import 'package:knoknok/controllers/knock_controller.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:intl/intl.dart';
 import 'package:knoknok/models/settings_model.dart';
 
 class HomeView extends StatefulWidget {
+  
   const HomeView({super.key});
 
   @override
@@ -16,11 +19,23 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   List<Knock> knocks = [];
   bool usePredefinedMessage = true;
+  List<String> emptyMessages = [];
+
 
   @override
   void initState() {
     super.initState();
     knocks = KnockController.instance.knocks;
+
+    emptyMessages = [
+      "No knocks? Go bother someone!",
+      "Fun Knock Fact: You can't knock on a door that doesn't exist",
+      "Knock knock. Who's there? Nobody!",
+      "You'd need no fingers to count the knocks you've got",
+      "You're as popular as a doorbell in a ghost town",
+      "Despite what you may think, you're not a door",
+      "It might seem as if knocks aren't real, but they are",
+    ];
 
     KnockController.instance.addListener(updateHomeState);
   }
@@ -44,12 +59,17 @@ class _HomeViewState extends State<HomeView> {
         child: ListView(
       children: [
         if (knocks.isEmpty)
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.all(16.0),
-              child: Text(
-                'No Knocks yet!',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    emptyMessages[Random().nextInt(emptyMessages.length)],
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
               ),
             ),
           ),
@@ -91,7 +111,7 @@ class _HomeViewState extends State<HomeView> {
                     IconButton.filled(
                       isSelected: false,
                       onPressed: () => {
-                        ConnectionController.emit(
+                        SocketIOController.emit(
                             "knock_send",
                             Knock(
                               sender: Settings.instance.username,
@@ -161,7 +181,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 TextButton(
                   onPressed: () => {
-                    ConnectionController.emit("knock_reply", {"target": knock.sender, "sender": Settings.instance.username, "message": usePredefinedMessage ? Settings.instance.parsedMessage : messageController.text}),
+                    SocketIOController.emit("knock_reply", {"target": knock.sender, "sender": Settings.instance.username, "message": usePredefinedMessage ? Settings.instance.parsedMessage : messageController.text}),
                     Navigator.pop(context),
                     setState(() {
                       KnockController.instance.removeKnock(knock);

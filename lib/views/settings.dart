@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:knoknok/controllers/connection_controller.dart';
+import 'package:knoknok/controllers/socket_io_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_manager/window_manager.dart';
 import '../models/settings_model.dart';
@@ -25,8 +25,8 @@ class _SettingsViewState extends State<SettingsView> {
   void initState() {
     super.initState();
 
-    _isConnected = ConnectionController.connectionStatus.value;
-    ConnectionController.connectionStatus.addListener(settingsUpdate);
+    _isConnected = SocketIOController.connectionStatus.value;
+    SocketIOController.connectionStatus.addListener(settingsUpdate);
 
     _usernameController =
         TextEditingController(text: Settings.instance.username);
@@ -39,7 +39,7 @@ class _SettingsViewState extends State<SettingsView> {
   void settingsUpdate() {
     try {
       setState(() {
-        _isConnected = ConnectionController.connectionStatus.value;
+        _isConnected = SocketIOController.connectionStatus.value;
       });
     } catch (e) {
       debugPrint("Error: $e");
@@ -48,7 +48,7 @@ class _SettingsViewState extends State<SettingsView> {
 
   @override
   void dispose() {
-    ConnectionController.connectionStatus.removeListener(settingsUpdate);
+    SocketIOController.connectionStatus.removeListener(settingsUpdate);
 
     _usernameController.dispose();
     _serverController.dispose();
@@ -65,7 +65,7 @@ class _SettingsViewState extends State<SettingsView> {
     debugPrint('Settings saved');
 
     debugPrint('Reconnecting');
-    ConnectionController.reconnect();
+    SocketIOController.reconnect();
 
   }
 
@@ -139,7 +139,7 @@ class _SettingsViewState extends State<SettingsView> {
               subtitle: Text(_isConnected ? 'Connected' : 'Disconnected'),
               trailing: IconButton.filled(
                   isSelected: false,
-                  onPressed: () => {ConnectionController.reconnect()},
+                  onPressed: () => {SocketIOController.reconnect()},
                   icon: Icon(Icons.refresh)),
             ),
           ),

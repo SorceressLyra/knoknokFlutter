@@ -1,7 +1,7 @@
 import 'package:dynamic_system_colors/dynamic_system_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
-import 'package:knoknok/controllers/connection_controller.dart';
+import 'package:knoknok/controllers/socket_io_controller.dart';
 import 'package:knoknok/views/home.dart';
 import 'package:knoknok/models/knock.dart';
 import 'package:knoknok/models/settings_model.dart';
@@ -26,14 +26,14 @@ class MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
-    ConnectionController.connectionStatus.addListener(() {
+    SocketIOController.connectionStatus.addListener(() {
       setState(() {});
     });
   }
 
   @override
   void dispose() {
-    ConnectionController.connectionStatus.removeListener(() {
+    SocketIOController.connectionStatus.removeListener(() {
       setState(() {});
     });
     _controller.dispose();
@@ -78,9 +78,9 @@ class MainAppState extends State<MainApp> {
               ],
             ),
             floatingActionButton: FloatingActionButton.large(
-              onPressed: ConnectionController.connectionStatus.value
+              onPressed: SocketIOController.connectionStatus.value
                   ? () async {
-                      ConnectionController.emit(
+                      SocketIOController.emit(
                           "knock_send", Knock.fromSettings(Settings.instance));
                       if (Settings.instance.allowHaptics &&
                           await Haptics.canVibrate()) {
@@ -88,10 +88,10 @@ class MainAppState extends State<MainApp> {
                       }
                     }
                   : null,
-              backgroundColor: ConnectionController.connectionStatus.value
+              backgroundColor: SocketIOController.connectionStatus.value
                   ? null
                   : currentScheme?.surfaceContainerHigh,
-              child: Icon(ConnectionController.connectionStatus.value
+              child: Icon(SocketIOController.connectionStatus.value
                   ? Icons.waving_hand
                   : Icons.cloud_off),
             ),
@@ -106,9 +106,11 @@ class MainAppState extends State<MainApp> {
                     child: IconButton.filled(
                       isSelected: _currentPage == 0,
                       onPressed: () {
-                        setState(() {
-                          _controller.jumpToPage(0);
-                        });
+                        if (_currentPage != 0) {
+                          setState(() {
+                            _controller.jumpToPage(0);
+                          });
+                        }
                       },
                       icon: const Icon(Icons.home),
                     ),
@@ -118,9 +120,11 @@ class MainAppState extends State<MainApp> {
                     child: IconButton.filled(
                       isSelected: _currentPage == 1,
                       onPressed: () {
-                        setState(() {
-                          _controller.jumpToPage(1);
-                        });
+                        if (_currentPage != 1) {
+                          setState(() {
+                            _controller.jumpToPage(1);
+                          });
+                        }
                       },
                       icon: const Icon(Icons.person),
                     ),
@@ -130,9 +134,11 @@ class MainAppState extends State<MainApp> {
                     child: IconButton.filled(
                       isSelected: _currentPage == 2,
                       onPressed: () {
-                        setState(() {
-                          _controller.jumpToPage(2);
-                        });
+                        if (_currentPage != 2) {
+                          setState(() {
+                            _controller.jumpToPage(2);
+                          });
+                        }
                       },
                       icon: const Icon(Icons.settings),
                     ),

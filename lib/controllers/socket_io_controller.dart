@@ -5,7 +5,7 @@ import 'package:knoknok/models/connection_user.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class ConnectionController {
+class SocketIOController {
   static io.Socket? _socket;
   static final Map<String, Function(dynamic)> _listeners = {};
   static final ValueNotifier<bool> connectionStatus = ValueNotifier<bool>(false);
