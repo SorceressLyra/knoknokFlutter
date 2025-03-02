@@ -148,7 +148,7 @@ class _SettingsViewState extends State<SettingsView> {
               showAboutDialog(
                   context: context,
                   applicationName: 'Knoknok',
-                  applicationVersion: '1.0.0',
+                  applicationVersion: '1.1.0',
                   applicationIcon: const Icon(Icons.waving_hand),
                   children: [
                     const Text(
@@ -159,13 +159,13 @@ class _SettingsViewState extends State<SettingsView> {
                     ElevatedButton.icon(
                         onPressed: () async {
                           final url =
-                              Uri.parse("https://github.com/SorceressLyra");
+                              Uri.parse("https://github.com/SorceressLyra/knoknokFlutter");
                           if (await canLaunchUrl(url)) {
                             await launchUrl(url);
                           }
                         },
-                        icon: const Icon(Icons.link),
-                        label: const Text('My Github'))
+                        icon: const Icon(Icons.source),
+                        label: const Text('Source Code'))
                   ]),
             },
             icon: Icon(Icons.info),
