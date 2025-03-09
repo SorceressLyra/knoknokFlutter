@@ -3,8 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:knoknok/controllers/socket_io_controller.dart';
 import 'package:knoknok/models/connection_user.dart';
-import 'package:knoknok/models/knock.dart';
-import 'package:knoknok/models/settings_model.dart';
+import 'package:knoknok/widgets/bottom_sheet.dart';
 
 class UserView extends StatefulWidget {
   const UserView({super.key});
@@ -14,8 +13,8 @@ class UserView extends StatefulWidget {
 }
 
 class _UserViewState extends State<UserView> {
-
   List<String> emptyMessages = [];
+  String selectedMessageType = "default";
 
   @override
   void initState() {
@@ -32,28 +31,31 @@ class _UserViewState extends State<UserView> {
       "You're the only one in the room",
       "Lonely as a door without a house"
     ];
-
   }
 
   Widget userCard(ConnectionUser user) {
     return Card(
-      child: ListTile(
-        leading: Icon(user.isOnMobile ? Icons.phone_android : Icons.phone_iphone),
-        trailing: IconButton.filled(
-          isSelected: false,
-          icon: Icon(Icons.message),
-          onPressed: () => {
-            SocketIOController.emit("knock_send", Knock(
-              sender: Settings.instance.username,
-              receiver: user.username,
-              isReply: false,
-              message: Settings.instance.parsedMessage,
-            )),
-          },
-        ),
-        title: Text(user.username),
+        child: ListTile(
+      leading: Icon(user.isOnMobile ? Icons.phone_android : Icons.phone_iphone),
+      trailing: IconButton.filled(
+        isSelected: false,
+        icon: Icon(Icons.message),
+        onPressed: () => {
+          showModalBottomSheet(
+              context: context,
+              builder: (context) => KnoknokBottomSheet(
+                    builder: (context) => StatefulBuilder(
+                      builder: (context, setState) => Column(
+                        children: [
+                          FilledButton(onPressed: () => {}, child: Text("Send Message")),
+                        ],
+                      ),
+                    ),
+                  ))
+        },
       ),
-    );
+      title: Text(user.username),
+    ));
   }
 
   @override

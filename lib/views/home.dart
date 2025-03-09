@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:knoknok/models/settings_model.dart';
 
 class HomeView extends StatefulWidget {
-  
   const HomeView({super.key});
 
   @override
@@ -20,7 +19,6 @@ class _HomeViewState extends State<HomeView> {
   List<Knock> knocks = [];
   bool usePredefinedMessage = true;
   List<String> emptyMessages = [];
-
 
   @override
   void initState() {
@@ -156,6 +154,12 @@ class _HomeViewState extends State<HomeView> {
 
   Future<dynamic> replyDialog(BuildContext context, Knock knock) {
     final TextEditingController messageController = TextEditingController();
+
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Text("data");
+        });
 
     return showDialog(
         context: context,

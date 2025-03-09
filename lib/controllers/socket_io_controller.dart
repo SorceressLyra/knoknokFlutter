@@ -13,9 +13,11 @@ class SocketIOController {
 
   /// Get all connected users except the current user
   static List<ConnectionUser> get getConnectedUsers {
-    return _connectedUsers
-      .where((user) => user.username != Settings.instance.username)
-      .toList();
+    return _connectedUsers.where((user) => user.username != Settings.instance.username).toList();
+  }
+
+  static int get connectedUsersCount {
+    return getConnectedUsers.length;
   }
 
   /// Get a specific user by username
