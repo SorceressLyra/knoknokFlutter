@@ -25,7 +25,7 @@ class SocketIOController {
 
   static void initializeSocket() {
     _socket = io.io(Settings.instance.serverUrl, <String, dynamic>{
-      'transports': ['websocket'],
+      'transports': ['websocket', 'polling'],
     });
 
     _socket!.onConnect((_) {
