@@ -1,7 +1,7 @@
 name: knoknok
 description: "Reach out to those you love with a simple tap"
 publish_to: 'none'
-version: 1.1.0
+version: 1.2.0
 
 environment:
   sdk: ^3.6.2
