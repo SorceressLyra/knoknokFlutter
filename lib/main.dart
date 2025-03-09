@@ -18,7 +18,7 @@ void main() async {
 
   // Load settings
   await Settings.initialize();
-  
+
   // Initialize Firebase
   if (Platform.isAndroid) {
     FirebaseHandler().init();
@@ -27,12 +27,10 @@ void main() async {
 
   await KnockController.instance.initialize();
 
-
-
   // Initialize connection controller
-  SocketIOController.initializeSocket();
-  SocketIOController.addListener("knock", KnockController.instance.handleKnock); //Global broadcasts
-  SocketIOController.addListener("knock_${Settings.instance.username}", KnockController.instance.handleKnock); //Targeted
+  SocketIOController.instance.initializeSocket();
+  SocketIOController.instance.addSocketListener("knock", KnockController.instance.handleKnock); //Global broadcasts
+  SocketIOController.instance.addSocketListener("knock_${Settings.instance.username}", KnockController.instance.handleKnock); //Targeted
 
   await initializeWindows();
   runApp(const MainApp());

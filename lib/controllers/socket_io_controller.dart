@@ -5,33 +5,37 @@ import 'package:knoknok/models/connection_user.dart';
 import 'package:knoknok/models/settings_model.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class SocketIOController {
-  static io.Socket? _socket;
-  static final Map<String, Function(dynamic)> _listeners = {};
-  static final ValueNotifier<bool> connectionStatus = ValueNotifier<bool>(false);
-  static final List<ConnectionUser> _connectedUsers = [];
+class SocketIOController with ChangeNotifier {
+  static final _instance = SocketIOController();
+  static SocketIOController get instance => _instance;
+
+  io.Socket? _socket;
+  bool connected = false;
+  final Map<String, Function(dynamic)> _listeners = {};
+  final List<ConnectionUser> _connectedUsers = [];
 
   /// Get all connected users except the current user
-  static List<ConnectionUser> get getConnectedUsers {
+  List<ConnectionUser> get getConnectedUsers {
     return _connectedUsers.where((user) => user.username != Settings.instance.username).toList();
   }
 
-  static int get connectedUsersCount {
+  int get connectedUsersCount {
     return getConnectedUsers.length;
   }
 
   /// Get a specific user by username
-  static bool get hasUsers {
+  bool get hasUsers {
     return _connectedUsers.where((user) => user.username != Settings.instance.username).isNotEmpty;
   }
 
-  static void initializeSocket() {
+  void initializeSocket() {
     _socket = io.io(Settings.instance.serverUrl, <String, dynamic>{
       'transports': ['websocket', 'polling'],
     });
 
     _socket!.onConnect((_) {
-      connectionStatus.value = true;
+      connected = true;
+      notifyListeners();
 
       emit("register", {
         "username": Settings.instance.username,
@@ -48,34 +52,36 @@ class SocketIOController {
       for (var userData in usersList) {
         _connectedUsers.add(ConnectionUser.fromJson(userData));
       }
+
+      notifyListeners();
     });
 
     _socket!.onDisconnect((_) {
-      connectionStatus.value = false;
+      connected = false;
       _connectedUsers.clear();
     });
 
     _socket!.onConnectError((err) {
-      connectionStatus.value = false;
+      connected = false;
     });
 
     _socket!.onError((err) {
-      connectionStatus.value = false;
+      connected = false;
     });
 
     // Attempt to connects
     _socket!.connect();
   }
 
-  static void disconnect() {
+  void disconnect() {
     _socket?.dispose();
     _socket = null;
     _listeners.clear();
-    connectionStatus.value = false;
+    connected = false;
     _connectedUsers.clear();
   }
 
-  static void reconnect() {
+  void reconnect() {
     if (_socket != null) {
       _socket!.dispose();
       _socket = null;
@@ -89,18 +95,18 @@ class SocketIOController {
     }
   }
 
-  static void emit(String event, dynamic data) {
+  void emit(String event, dynamic data) {
     if (_socket != null && _socket!.connected) {
       _socket!.emit(event, data);
     }
   }
 
-  static void addListener(String event, Function(dynamic) callback) {
+  void addSocketListener(String event, Function(dynamic) callback) {
     _listeners[event] = callback;
     _socket!.on(event, callback);
   }
 
-  static void removeListener(String event) {
+  void removeSocketListener(String event) {
     _listeners.remove(event);
     _socket!.off(event);
   }
